@@ -1,0 +1,76 @@
+// The following is code designed to be ran on a CHIP-8 virtual machine. Itwon't run just like this - you'll need to compile it to a ROM first. As ofwriting (09/01/2024), I haven't written a compiler yet - however, I did write acompiled version of this code by hand, which can be found in ./font_test.ch8 When loaded into memory and ran, it should print out the complete character setincluded in this version of CHIP-8 i.e. 0-9 and A-F.This file exists for educational purposes.
+// To view the contents of font_test.ch8, you'll need a hex viewer/editor - I recommend the freeware HxD in the interest of simplicity.
+
+// I've stored the X position of the current character in register 0, and the Y variable in register 1. Both are initialised to 0 as standard at the start of CHIP-8's execution. Wherever you see "Character [something]", what this means is that the index register is being updated to point to the character's sprite in memory - the font set starts at 0x50 in memory and each sprite is 5 bytes wide.
+
+// AN NN: Set index register to NNN.
+// DI JN: Print a sprite stored in memory, starting at the index register, to the position (X, Y), where X and Y are the values stored in registers I and J respectively.
+// 7I NN: Set index register I.
+// 1N NN: Jump to location NNN.
+
+A0 50 // Character 0 
+D0 15
+ 
+70 05
+A0 55 // Character 1
+D0 15
+
+70 05
+A0 5A // Character 2
+D0 15
+
+70 05
+A0 5F // Character 3
+D0 15
+
+70 05
+A0 64 // Character 4
+D0 15
+
+70 05
+A0 69 // Character 5
+D0 15
+
+70 05
+A0 6E // Character 6
+D0 15
+
+70 05
+A0 73 // Character 7
+D0 15
+
+70 05
+A0 78 // Character 8
+D0 15
+
+70 05
+A0 7D // Character 9
+D0 15
+
+
+60 00 // Set variable X to 0
+61 06 // Set variable Y to 6
+A0 82 // Character A 
+D0 15 
+
+70 05
+A0 87 // Character B
+D0 15
+
+70 05
+A0 8C // Character C
+D0 15
+
+70 05
+A0 91 // Character D
+D0 15
+
+70 05
+A0 96 // Character E
+D0 15
+
+70 05
+A0 9B // Character F
+D0 15
+
+12 3C // Endlessly loop

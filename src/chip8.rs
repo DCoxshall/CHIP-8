@@ -14,7 +14,7 @@ pub struct Chip8 {
 
 impl Chip8 {
     pub fn new() -> Self {
-        Chip8 {
+        let mut new_chip = Chip8 {
             ram: [0x00; 4096],
             pc: 0x200,
             i: 0,
@@ -24,6 +24,38 @@ impl Chip8 {
             v: [0; 16],
             // TODO: Re-implement this as a bitboard for efficiency.
             pixels: [[false; 64]; 32],
+        };
+
+        // Add characters to memory locations 0x050-09F.
+        let font_vector: Vec<u8> = vec![
+            0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+            0x20, 0x60, 0x20, 0x20, 0x70, // 1
+            0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+            0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+            0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+            0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+            0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+            0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+            0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+            0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+            0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+            0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+            0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+            0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+            0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+            0xF0, 0x80, 0xF0, 0x80, 0x80, // F
+        ];
+
+        new_chip.insert_ram(font_vector, 0x50);
+
+        return new_chip;
+    }
+
+    /// Inserts data in `data` into RAM at the start location, overwriting data
+    /// that was previously there.
+    pub fn insert_ram(&mut self, data: Vec<u8>, start_loc: u16) {
+        for i in 0..data.len() {
+            self.ram[i + start_loc as usize] = data[i];
         }
     }
 
@@ -55,9 +87,7 @@ impl Chip8 {
         let mut file = File::open(filename)?;
         let mut ram_vector: Vec<u8> = vec![];
         file.read_to_end(&mut ram_vector)?;
-        for (pos, val) in ram_vector.iter().enumerate() {
-            self.ram[pos + 512] = *val;
-        }
+        self.insert_ram(ram_vector, 512);
         Ok(())
     }
 
@@ -88,7 +118,9 @@ impl Chip8 {
         self.i = nnn;
     }
 
-    /// 7XNN: Add NN to register `v[X]`. This implementation assumes that addition wraps rather than saturates (i.e. 255 + 1 = 0, rather than 255). This function also does not set CHIP-8's carry flag.
+    /// 7XNN: Add NN to register `v[X]`. This implementation assumes that
+    /// addition wraps rather than saturates (i.e. 255 + 1 = 0, rather than
+    /// 255). This function also does not set CHIP-8's carry flag.
     pub fn add(&mut self, register: u16, nn: u16) {
         self.v[register as usize] = self.v[register as usize].wrapping_add(nn as u8);
     }
